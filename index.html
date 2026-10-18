@@ -16,7 +16,7 @@ const labels=[{name:'Río Paraná',lat:-24.528167,lng:-54.312933},{name:'Río Pa
 for(const label of labels){L.marker([label.lat,label.lng],{interactive:false,keyboard:false,icon:L.divIcon({className:'',html:'<span class="river-fixed-label">'+label.name+'</span>',iconSize:[0,0],iconAnchor:[38,14]})}).addTo(riverLabels);}
 // Visualización: partículas sobre geometría real, sin inferir velocidades hidrológicas.
 const routeLayer=L.layerGroup().addTo(map);
-const riverParts=data=>data.features.filter(f=>f.properties.name===data).flatMap(f=>f.geometry.coordinates);
+const riverParts=name=>riverData.features.filter(f=>f.properties.name===name).flatMap(f=>f.geometry.coordinates);
 function chain(parts,start){const result=[];let tip=start;for(let i=0;i<parts.length;i++){let best=null;for(let j=0;j<parts.length;j++){if(parts[j].used)continue;for(const rev of [false,true]){const a=rev?parts[j].points.at(-1):parts[j].points[0];const dist=Math.hypot(a[0]-tip[0],a[1]-tip[1]);if(!best||dist<best.dist)best={j,rev,dist};}}if(!best||best.dist>.75)break;parts[best.j].used=true;const pts=best.rev?[...parts[best.j].points].reverse():parts[best.j].points;result.push(...pts);tip=pts.at(-1);}return result.map(([lng,lat])=>[lat,lng]);}
 const paranaPath=chain(riverParts('Paraná').map(points=>({points})),[-50.489729,-19.020441]);
 const paraguayPath=paraguay.map(([lng,lat])=>[lat,lng]);
